@@ -1,0 +1,94 @@
+\documentclass[conference]{IEEEtran}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{cite}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{balance}
+\usepackage{times}
+\usepackage{tikz}
+
+\bibliographystyle{IEEEtran}
+
+\begin{document}
+
+\title{Reinforcement Learning Based Optimal Speed Control of DC Motor with Comparison to LQR and Pole Placement Methods}
+
+\author{
+\IEEEauthorblockN{[Your Name]}
+\IEEEauthorblockA{
+School of IT Engineering\\
+Kazakh-British Technical University, 050000\\
+Tole bi 59, Almaty, Kazakhstan
+}
+}
+
+\maketitle
+\IEEEpeerreviewmaketitle
+
+\section{Problem Statement}
+
+Optimal speed control of DC motors is a fundamental challenge in industrial automation, robotics, and electric vehicles. Conventional controllers such as Linear Quadratic Regulator (LQR) and Pole Placement are widely used due to their mathematical rigor and reliability. However, these methods may struggle with nonlinearities, disturbances, and parameter variations. Reinforcement Learning (RL) offers a promising alternative by enabling adaptive, data-driven control policies that do not require explicit system modeling.
+
+The mathematical model of a DC motor is typically described by the following equations:
+\begin{equation}
+\begin{aligned}
+L_{a} \frac{d i_{a}}{dt} &= -R_{a} i_{a} - K_{e} \omega + V \\
+J \frac{d \omega}{dt} &= K_{t} i_{a} - B_{m} \omega - T_{\text{load}}
+\end{aligned}
+\end{equation}
+where $L_a$ is the armature inductance, $R_a$ is the armature resistance, $K_e$ is the back EMF constant, $K_t$ is the torque constant, $J$ is the rotor inertia, $B_m$ is the friction coefficient, $V$ is the applied voltage, $i_a$ is the armature current, $\omega$ is the angular speed, and $T_{load}$ is the load torque.
+
+This research aims to develop and benchmark an RL-based speed control strategy for DC motors, comparing its performance to LQR and Pole Placement under identical conditions.
+
+\section{Literature Review}
+
+\begin{figure}[!t]
+    \centering
+    \includegraphics[width=0.45\textwidth]{dc_motor_block_diagram.png}
+    \caption{Block diagram of a DC motor speed control system. The controller (LQR, Pole Placement, or RL agent) generates the control input $V$ to regulate the motor speed $\omega$ in the presence of disturbances and parameter variations.}
+    \label{fig:dc_motor_block}
+\end{figure}
+
+
+\textbf{Classical Control of DC Motors:}
+LQR and Pole Placement have been extensively applied in DC motor control \cite{Ogata2010, Nise2019, Kumar2010, Singh2012, Kuo2015}. These methods offer optimality and pole assignment flexibility, but their performance is sensitive to model uncertainties and unmodeled nonlinearities. Robust and adaptive extensions have been proposed to address these issues, but often at the cost of increased complexity and tuning effort.
+
+\textbf{Reinforcement Learning in Control:}
+Recent advances in RL, such as TD3, DDPG, and A2C algorithms, have shown superior performance in complex, nonlinear, and high-dimensional environments \cite{Lillicrap2015, Fujimoto2018, Silver2014, Mnih2015, Kiumarsi2017, Busoniu2010, Sutton2018, Peters2010, Levine2016, Wang2019, Doya2000, Recht2019, Kiumarsi2018, Zhang2021, Chen2022}. RL's ability to learn directly from data and adapt to changing dynamics makes it attractive for motor control, especially when accurate models are unavailable or the system is subject to disturbances and parameter variations.
+
+\textbf{Hybrid, Robust, and Adaptive Approaches:}
+Hybrid controllers that combine RL with classical or robust control have been explored to leverage the strengths of both paradigms \cite{Busoniu2010, Kiumarsi2017, Kiumarsi2018}. Adaptive RL methods can further improve performance in the presence of time-varying or uncertain parameters.
+
+\textbf{Reward Shaping and Training Strategies:}
+Reward design is critical for RL success in control applications. Studies have shown that carefully crafted reward functions, often inspired by classical control objectives, can accelerate learning and improve stability \cite{Sutton2018, Peters2010, Levine2016}. Chunked training, curriculum learning, and scenario-based evaluation are also important for robust policy development \cite{Wang2019, Recht2019, Zhang2021}.
+
+\textbf{Benchmarking and Evaluation:}
+Despite the promise of RL, comprehensive benchmarking against classical controllers is limited. Many works focus on simulation results without standardized scenarios or metrics, making direct comparison difficult \cite{Busoniu2010, Recht2019, Zhang2021}. Recent efforts emphasize the need for fair, scenario-based evaluation pipelines and the use of metrics such as IAE, ISE, SSE, control energy, rise time, settling time, overshoot, and robustness \cite{Kiumarsi2017, Chen2022}.
+
+\textbf{Interpretability and Real-World Deployment:}
+Interpretability and safety remain challenges for RL in safety-critical control systems. Policy gradient and actor-critic methods offer some transparency, but further research is needed for practical deployment \cite{Peters2010, Levine2016}. Real-world applications of RL for DC motor control are still emerging, with most studies conducted in simulation \cite{Zhang2021, Chen2022}.
+
+\textbf{Summary:}
+In summary, the literature demonstrates the potential of RL to outperform classical controllers in complex and uncertain environments, but also highlights the need for systematic benchmarking, robust reward design, and attention to interpretability and deployment challenges. This research aims to address these gaps by providing a comprehensive comparison of RL, LQR, and Pole Placement controllers for DC motor speed control under standardized scenarios and metrics.
+
+
+
+\section{What is Missing? What is Not Good in Other Approaches?}
+Most classical controllers rely on accurate system models and may not adapt well to changing dynamics or disturbances. RL methods, while adaptive, require careful reward shaping and significant training time. Existing research often lacks fair comparison scenarios, such as identical disturbances and parameter variations. Furthermore, interpretability and practical deployment of RL controllers remain challenging \cite{Peters2010}.
+
+\section{My Plan and Expected Result}
+
+
+The research will begin by modeling the DC motor dynamics and defining clear control objectives using the mathematical equations provided. Classical controllers, specifically LQR and Pole Placement, will be implemented as baseline methods for comparison. Reinforcement Learning agents, such as TD3 and A2C, will be designed and trained with custom reward functions and chunked training strategies to enhance learning efficiency and robustness.
+
+To ensure a fair and comprehensive evaluation, a variety of scenarios will be generated, including step, ramp, sine, and load disturbance signals. Performance metrics will be collected and analyzed, focusing on tracking error (Integral of Absolute Error, Integral of Squared Error, Steady-State Error), control energy (total energy used by the control input), rise time (time to reach a specified percentage of the reference speed), settling time (time to remain within a specified error band), overshoot (maximum speed exceeding the reference), and robustness (performance under disturbances and parameter variations).
+
+The comparison between RL agents and classical controllers will be conducted using both statistical and scenario-based analysis. It is expected that RL-based controllers will demonstrate superior adaptability and robustness, especially under nonlinear and disturbed conditions. The research will provide valuable insights into reward shaping, training strategies, and the practical deployment of RL in industrial motor control applications.
+
+\bibliography{library}
+
+\balance
+\end{document}

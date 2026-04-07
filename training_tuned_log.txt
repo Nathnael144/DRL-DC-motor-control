@@ -1,0 +1,12 @@
+
+	Trial License -- for use to evaluate programs for possible purchase as an end-user only.
+
+=== Tuned Deep RL TD3 Training ===
+Motor: La=0.00058  Ra=2.59  J=0.000569  Kt=0.0286
+Sim: Ts=1.0e-04  ctrlInterval=10  maxSteps=500  duration=0.50s
+Custom rlFunctionEnv created.
+TD3 agent created (512 hidden units, fresh).
+Agent configured: 512 HU, gamma=0.995, actor LR=5e-5.
+Training: up to 5000 episodes (stop at avg reward 4500).
+Reward: max ~5000/ep (perfect tracking, zero control cost)
+
