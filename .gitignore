@@ -1,1 +1,22 @@
 trained_rl_agent_curriculum.mat
+
+# Python/cache artifacts
+__pycache__/
+*.py[cod]
+.matplotlib_cache/
+python_td3_experiments/.matplotlib_cache/
+python_td3_experiments/outputs/.mplcache_bootstrap/
+
+# Large RL training checkpoints and transient logs
+python_td3_experiments/outputs/**/sac_model*.zip
+python_td3_experiments/outputs/**/td3_model*.zip
+python_td3_experiments/outputs/**/ddpg_model*.zip
+python_td3_experiments/outputs/**/training_stdout.log
+python_td3_experiments/outputs/**/training_stderr.log
+python_td3_experiments/outputs/**/monitor.csv
+python_td3_experiments/outputs/**/progress.json
+python_td3_experiments/outputs/**/chunk_status.json
+
+# MATLAB/Simulink generated build folders
+slprj/
+*.slxc
