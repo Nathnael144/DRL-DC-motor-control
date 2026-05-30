@@ -58,6 +58,34 @@ Important interpretation:
 - this is **not** a claim that pure SAC from scratch beat LQR
 - the successful result is a **hybrid controller**: classical control + residual RL
 
+## Result Figures
+
+These graphs are rendered directly from the final experiment outputs stored in this repository.
+
+### Overall Benchmark Summary
+
+![Overall Mean IAE](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_best_comparison/overall_mean_iae_with_seed_std.png)
+
+![Overall Mean SSE](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_best_comparison/overall_mean_sse_with_seed_std.png)
+
+### Hard Nonlinear Cases
+
+![Hard Case Mean IAE](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_best_comparison/hard_cases_mean_iae_with_seed_std.png)
+
+![Hard Case Mean Energy](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_best_comparison/hard_cases_mean_energy_with_seed_std.png)
+
+### Training Curves
+
+![Training Reward With Curriculum Stages](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_report_graphs/training_reward_with_curriculum_stages.png)
+
+![Training Learning Curves Across Seeds](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_report_graphs/training_learning_curves_all_seeds.png)
+
+### Comparison Summary
+
+![Winner Count Bars](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_report_graphs/winner_count_bars.png)
+
+![Overall Mean Std Report Table](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_report_graphs/overall_mean_std_report_table.png)
+
 ## Evaluation Setup
 
 All controllers are evaluated on the same benchmark cases.
@@ -80,9 +108,9 @@ Reference scenarios:
 
 Primary metrics:
 
-- `IAE` — main tracking metric
+- `IAE` - main tracking metric
 - `ISE`
-- `SSE` — steady-state / final error
+- `SSE` - steady-state / final error
 - `ControlEnergy`
 - `SaturationFraction`
 - `RiseTime`
@@ -106,7 +134,7 @@ Important scripts:
 - `select_best_rl_checkpoint.py`
   Validation-based checkpoint selector.
 - `compare_sac_td3_classical.py`
-  Builds the final mean ± std comparisons.
+  Builds the final mean +/- std comparisons.
 - `generate_residual_sac_report_graphs.py`
   Generates training graphs, summary tables, and report figures.
 
@@ -128,7 +156,7 @@ These folders contain:
 
 - training curves across seeds
 - curriculum-stage reward plots
-- mean ± std summary tables
+- mean +/- std summary tables
 - hard-case comparison tables
 - winner-count tables and charts
 - per-seed selected-checkpoint tables
