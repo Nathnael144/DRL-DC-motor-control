@@ -20,13 +20,14 @@ The main research goal is not only to train RL controllers, but to test whether 
 
 ## Main Finding
 
-The strongest result in this repository is not direct end-to-end RL. The most competitive setup is a hybrid controller where `SAC` learns a bounded residual correction on top of a nominal `LQR` controller, with curriculum training and checkpoint selection.
+The strongest results in this repository are not direct end-to-end RL agents. The main outcome is that hybrid residual reinforcement learning is substantially more competitive than direct RL when it is built on top of strong classical backbones.
 
 In practical terms:
 
 - direct RL alone is weaker and less stable than strong classical baselines
-- residual RL is much more competitive
-- classical controller quality still matters, because the learned residual depends on the backbone it corrects
+- residual `SAC-LQR`, residual `SAC-MPC`, and residual `SAC-H-infinity` are all meaningful improvements over direct RL
+- the classical backbone still matters, because the learned residual inherits both the strengths and limitations of the controller it corrects
+- the final comparison is therefore not only RL versus classical control, but also residual RL across multiple backbone choices
 
 ## Benchmark Setup
 
@@ -205,7 +206,7 @@ The repository also keeps rendered table figures for quick inspection of the mai
 
 ## Best Current Result
 
-Best current setup:
+Best current project-level result:
 
 - `SAC`
 - `residual_lqr`
@@ -215,7 +216,9 @@ Best current setup:
 - `100000` steps per seed
 - validation-based best-checkpoint selection
 
-Representative overall summary:
+This is the strongest single hybrid result in the repository for the direct overall benchmark.
+
+Representative direct-benchmark summary:
 
 | Controller | Family | Seeds | Mean IAE | Mean Energy | Mean SSE |
 |---|---|---:|---:|---:|---:|
@@ -224,10 +227,20 @@ Representative overall summary:
 | MPC | Classical | - | 15.7381 | 201.7797 | 6.8053 |
 | TD3 | RL | 10 | 20.4985 | 154.1465 | 20.9578 |
 
+Residual-backbone comparison result:
+
+- residual `SAC-LQR`, residual `SAC-MPC`, and residual `SAC-H-infinity` are all studied in this repository
+- `H-infinity` remains the strongest backbone for accumulated tracking error in many cases
+- residual `SAC-H-infinity` is especially competitive on final convergence and steady-state behavior
+- residual `SAC-MPC` improves over standalone `MPC`, but does not dominate the stronger `LQR` or `H-infinity` residual variants
+- this makes the backbone study an important result by itself: the learned residual helps, but it does not erase the importance of the underlying classical controller
+
 Interpretation:
 
 - residual RL can improve final convergence while staying close to strong classical tracking
-- direct RL is clearly less reliable than the best hybrid setup
+- direct RL is clearly less reliable than the best hybrid setups
+- residual `SAC-LQR` gives the strongest overall single result in the direct benchmark
+- residual `SAC-H-infinity` is important because it shows where residual learning can help a highly robust classical backbone
 - the classical backbone remains a major determinant of overall tracking quality
 
 ## How To Reproduce
