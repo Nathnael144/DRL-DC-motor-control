@@ -183,6 +183,26 @@ This script generates report-ready:
 
 ![Overall Backbone SSE](python_td3_experiments/outputs/residual_backbone_comparison_lqr_mpc_hinf/overall_backbone_sse.png)
 
+![Hard Backbone IAE](python_td3_experiments/outputs/residual_backbone_comparison_lqr_mpc_hinf/hard_backbone_iae.png)
+
+![Hard Backbone SSE](python_td3_experiments/outputs/residual_backbone_comparison_lqr_mpc_hinf/hard_backbone_sse.png)
+
+### Residual Backbone Training Curves
+
+These plots show the training behavior of residual `SAC-MPC` and residual `SAC-H-infinity` under the same broader backbone-comparison workflow.
+
+![Residual SAC-MPC Learning Curves](python_td3_experiments/outputs/residual_backbone_comparison_lqr_mpc_hinf/sac_mpc_learning_curves.png)
+
+![Residual SAC-H-infinity Learning Curves](python_td3_experiments/outputs/residual_backbone_comparison_lqr_mpc_hinf/sac_hinf_learning_curves.png)
+
+### Summary Tables
+
+The repository also keeps rendered table figures for quick inspection of the main summary statistics.
+
+![Overall Mean Std Report Table](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_report_graphs/overall_mean_std_report_table.png)
+
+![Hard Cases Mean Std Report Table](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_report_graphs/hard_cases_mean_std_report_table.png)
+
 ## Best Current Result
 
 Best current setup:
