@@ -1,0 +1,33 @@
+Operating-condition details requested by the reviewers
+
+Source file:
+python_td3_experiments/dc_motor_env.py
+
+Simulation timing
+- Simulation step: 1e-4 s
+- Control step: 1e-3 s
+- Episode duration: 0.5 s
+
+Reference scenarios
+- step_nominal:
+  constant reference = 100 rad/s
+
+- step_load_disturbance:
+  constant reference = 100 rad/s
+  load torque disturbance = 0.02 N*m
+  disturbance start time = 0.2 s
+  disturbance duration = from 0.2 s to the end of the 0.5 s episode
+
+- ramp:
+  r(t) = min(200 t, 120) rad/s
+  over the 0.5 s episode this rises from 0 to 100 rad/s
+
+- sine:
+  r(t) = 100 + 20 sin(2*pi*2*t) rad/s
+  mean = 100 rad/s
+  amplitude = 20 rad/s
+  frequency = 2 Hz
+
+Suggested reply text
+
+Certainly. The benchmark scenarios were defined directly in the simulation environment. The load-disturbance case uses a constant 100 rad/s reference with a 0.02 N*m load torque step applied at 0.2 s and maintained until the end of the 0.5 s episode. The sinusoidal reference is 100 + 20 sin(2*pi*2*t) rad/s, i.e., mean 100 rad/s, amplitude 20 rad/s, frequency 2 Hz. The ramp reference is min(200 t, 120) rad/s, and the nominal step reference is 100 rad/s.

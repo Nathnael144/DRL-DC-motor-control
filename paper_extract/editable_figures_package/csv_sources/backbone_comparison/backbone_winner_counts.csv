@@ -1,0 +1,13 @@
+metric,controller,wins
+IAE,Hinf,9
+IAE,Residual SAC-Hinf,7
+IAE,Residual SAC-LQR,0
+IAE,LQR,6
+IAE,Residual SAC-MPC,2
+IAE,MPC,0
+SSE,Hinf,4
+SSE,Residual SAC-Hinf,10
+SSE,Residual SAC-LQR,5
+SSE,LQR,2
+SSE,Residual SAC-MPC,3
+SSE,MPC,0
