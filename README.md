@@ -4,6 +4,22 @@ This repository studies DC motor speed control with both classical controllers a
 
 The main goal of the project is not only to train RL controllers, but to test them fairly against strong classical baselines under the same motor model, disturbances, nonlinearities, voltage limits, and reference signals.
 
+## Paper Materials
+
+For the submitted paper, a public-safe editable figure package is available in:
+
+- [`paper_extract/editable_figures_package`](paper_extract/editable_figures_package)
+
+It includes:
+
+- exported figure files used in the paper
+- figure-generation source scripts and LaTeX files
+- benchmark-definition code, including the operating-condition setup in `dc_motor_env.py`
+- lightweight summary CSV files and winner tables
+- an operating-condition note with the exact reference and load-disturbance values used in the benchmark
+
+The package does not include the previously uploaded ZIP bundle or the heavier raw combined-monitor CSV files. The public repo now keeps a smaller reproducibility-oriented set of paper materials.
+
 ## Project Focus
 
 This work compares:
@@ -105,6 +121,13 @@ Reference scenarios:
 - `step_load_disturbance`
 - `ramp`
 - `sine`
+
+Scenario details used in the benchmark:
+
+- `step_nominal`: constant reference `100 rad/s`
+- `step_load_disturbance`: constant reference `100 rad/s`, with a `0.02 N*m` load torque step applied at `0.2 s` and held to the end of the `0.5 s` episode
+- `ramp`: `r(t) = min(200 t, 120)` rad/s
+- `sine`: `r(t) = 100 + 20 sin(2*pi*2*t)` rad/s, i.e. mean `100 rad/s`, amplitude `20 rad/s`, frequency `2 Hz`
 
 Primary metrics:
 
@@ -240,7 +263,8 @@ Generate report graphs and table images:
 Large training checkpoint ZIP files are intentionally not tracked in Git. The repository keeps:
 
 - reproducible code
-- final CSV results
+- selected summary CSV results
 - final report figures and tables
+- a public-safe editable figure package for the paper
 
 This keeps the project lightweight while preserving the important research outputs.
