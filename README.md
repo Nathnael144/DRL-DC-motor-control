@@ -1,28 +1,12 @@
 # DRL-DC-Motor-Control
 
-This repository studies DC motor speed control with both classical controllers and deep reinforcement learning.
+DC motor speed-control benchmark comparing classical control and deep reinforcement learning under the same plant model, constraints, disturbances, and reference scenarios.
 
-The main goal of the project is not only to train RL controllers, but to test them fairly against strong classical baselines under the same motor model, disturbances, nonlinearities, voltage limits, and reference signals.
+This repository is organized as an engineering project first: build the motor model, define benchmark cases, train RL agents, compare them against classical baselines, and inspect the resulting figures and summary tables.
 
-## Paper Materials
+## What This Project Does
 
-For the submitted paper, a public-safe editable figure package is available in:
-
-- [`paper_extract/editable_figures_package`](paper_extract/editable_figures_package)
-
-It includes:
-
-- exported figure files used in the paper
-- figure-generation source scripts and LaTeX files
-- benchmark-definition code, including the operating-condition setup in `dc_motor_env.py`
-- lightweight summary CSV files and winner tables
-- an operating-condition note with the exact reference and load-disturbance values used in the benchmark
-
-The package does not include the previously uploaded ZIP bundle or the heavier raw combined-monitor CSV files. The public repo now keeps a smaller reproducibility-oriented set of paper materials.
-
-## Project Focus
-
-This work compares:
+The repository studies speed tracking for a DC motor using:
 
 - `PID`
 - `LQR`
@@ -30,81 +14,23 @@ This work compares:
 - `MPC`
 - `TD3`
 - `SAC`
-- `Residual SAC over LQR`
+- residual RL variants built on top of classical controllers
 
-The final and strongest result in this repository is a **residual SAC controller**:
+The main research goal is not only to train RL controllers, but to test whether they remain competitive when evaluated fairly against strong classical baselines on the same benchmark.
 
-- SAC does not directly command the full motor voltage
-- instead, it learns a bounded correction on top of a nominal `LQR` controller
-- training is improved with:
-  - expert replay warm-start from `MPC`
-  - a `nominal -> robust -> hard -> hard_tracking` curriculum
-  - best-checkpoint validation selection
+## Main Finding
 
-## Final Result
+The strongest result in this repository is not direct end-to-end RL. The most competitive setup is a hybrid controller where `SAC` learns a bounded residual correction on top of a nominal `LQR` controller, with curriculum training and checkpoint selection.
 
-The best final experiment is:
+In practical terms:
 
-- `Residual SAC over LQR`
-- `MPC warm-start`
-- `curriculum training`
-- `10 seeds`
-- `100000` steps per seed
-- `best checkpoint selected per seed`
+- direct RL alone is weaker and less stable than strong classical baselines
+- residual RL is much more competitive
+- classical controller quality still matters, because the learned residual depends on the backbone it corrects
 
-Overall mean performance:
+## Benchmark Setup
 
-| Controller | Family | Seeds | Mean IAE | IAE Std | Mean Energy | Energy Std | Mean SSE | SSE Std |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Residual SAC | RL | 10 | **15.7019** | **0.0170** | 202.4493 | 0.2235 | **6.2263** | **0.0992** |
-| LQR | Classical | - | 15.7137 | - | 202.0997 | - | 6.7328 | - |
-| MPC | Classical | - | 15.7381 | - | 201.7797 | - | 6.8053 | - |
-| PID | Classical | - | 19.8084 | - | 147.2820 | - | 16.9282 | - |
-| TD3 | RL | 10 | 20.4985 | 0.7287 | 154.1465 | 12.9617 | 20.9578 | 3.8801 |
-| LQI | Classical | - | 21.9115 | - | 141.6799 | - | 23.2201 | - |
-
-What this means:
-
-- the **selected residual SAC setup slightly outperformed standalone LQR and MPC on mean IAE**
-- it also achieved **lower steady-state error**
-- compared with direct TD3 and direct SAC training, the residual approach was much more competitive and much more stable across seeds
-
-Important interpretation:
-
-- this is **not** a claim that pure SAC from scratch beat LQR
-- the successful result is a **hybrid controller**: classical control + residual RL
-
-## Result Figures
-
-These graphs are rendered directly from the final experiment outputs stored in this repository.
-
-### Overall Benchmark Summary
-
-![Overall Mean IAE](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_best_comparison/overall_mean_iae_with_seed_std.png)
-
-![Overall Mean SSE](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_best_comparison/overall_mean_sse_with_seed_std.png)
-
-### Hard Nonlinear Cases
-
-![Hard Case Mean IAE](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_best_comparison/hard_cases_mean_iae_with_seed_std.png)
-
-![Hard Case Mean Energy](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_best_comparison/hard_cases_mean_energy_with_seed_std.png)
-
-### Training Curves
-
-![Training Reward With Curriculum Stages](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_report_graphs/training_reward_with_curriculum_stages.png)
-
-![Training Learning Curves Across Seeds](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_report_graphs/training_learning_curves_all_seeds.png)
-
-### Comparison Summary
-
-![Winner Count Bars](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_report_graphs/winner_count_bars.png)
-
-![Overall Mean Std Report Table](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_report_graphs/overall_mean_std_report_table.png)
-
-## Evaluation Setup
-
-All controllers are evaluated on the same benchmark cases.
+All controllers are evaluated on the same operating conditions and reference scenarios.
 
 Plant conditions:
 
@@ -122,93 +48,171 @@ Reference scenarios:
 - `ramp`
 - `sine`
 
-Scenario details used in the benchmark:
+Scenario details:
 
 - `step_nominal`: constant reference `100 rad/s`
 - `step_load_disturbance`: constant reference `100 rad/s`, with a `0.02 N*m` load torque step applied at `0.2 s` and held to the end of the `0.5 s` episode
 - `ramp`: `r(t) = min(200 t, 120)` rad/s
-- `sine`: `r(t) = 100 + 20 sin(2*pi*2*t)` rad/s, i.e. mean `100 rad/s`, amplitude `20 rad/s`, frequency `2 Hz`
+- `sine`: `r(t) = 100 + 20 sin(2*pi*2*t)` rad/s, with mean `100 rad/s`, amplitude `20 rad/s`, and frequency `2 Hz`
 
 Primary metrics:
 
-- `IAE` - main tracking metric
+- `IAE`
 - `ISE`
-- `SSE` - steady-state / final error
+- `SSE`
 - `ControlEnergy`
 - `SaturationFraction`
 - `RiseTime`
 - `SettlingTime`
 - `Overshoot`
 
-## Main Python Package
+## Repository Structure
 
-The Python experiment pipeline lives in:
+Main folders:
 
-- [`python_td3_experiments`](python_td3_experiments)
+- [`python_td3_experiments`](python_td3_experiments): Python benchmark, training, comparison, and plotting pipeline
+- `Reinforcement-Learning-controller-for-a-DC-motor-main`: earlier project materials
+- root MATLAB/Simulink files: model-building, controller design, and earlier evaluation scripts
 
-Important scripts:
+Most users should start with:
 
-- `dc_motor_env.py`
-  The Gymnasium DC motor environment, including nonlinear perturbations and residual-LQR mode.
-- `experiment1_train_td3_many_seeds.py`
-  Multi-seed RL training runner for `TD3`, `SAC`, and `DDPG`.
-- `experiment2_add_controllers.py`
-  Classical and RL controller comparison script.
-- `select_best_rl_checkpoint.py`
-  Validation-based checkpoint selector.
-- `compare_sac_td3_classical.py`
-  Builds the final mean +/- std comparisons.
-- `generate_residual_sac_report_graphs.py`
-  Generates training graphs, summary tables, and report figures.
+- [`python_td3_experiments/dc_motor_env.py`](python_td3_experiments/dc_motor_env.py)
+- [`python_td3_experiments/experiment1_train_td3_many_seeds.py`](python_td3_experiments/experiment1_train_td3_many_seeds.py)
+- [`python_td3_experiments/experiment2_add_controllers.py`](python_td3_experiments/experiment2_add_controllers.py)
+- [`python_td3_experiments/compare_sac_td3_classical.py`](python_td3_experiments/compare_sac_td3_classical.py)
+- [`python_td3_experiments/generate_residual_sac_report_graphs.py`](python_td3_experiments/generate_residual_sac_report_graphs.py)
 
-## Final Output Folders
+## Workflow
 
-Best 10-seed residual SAC training run:
+### Step 1: Define the Motor Environment
 
-- `python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k`
+The benchmark environment is implemented in:
 
-Best-checkpoint comparison:
+- [`python_td3_experiments/dc_motor_env.py`](python_td3_experiments/dc_motor_env.py)
 
-- `python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_best_comparison`
+This file defines:
 
-Report-ready graphs and tables:
+- motor parameters
+- plant-condition perturbations
+- reference scenarios
+- disturbance timing and magnitude
+- reward support for direct and residual RL control
 
-- `python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_report_graphs`
+### Step 2: Train RL Agents
 
-These folders contain:
+Use:
 
-- training curves across seeds
-- curriculum-stage reward plots
-- mean +/- std summary tables
-- hard-case comparison tables
-- winner-count tables and charts
-- per-seed selected-checkpoint tables
+- [`python_td3_experiments/experiment1_train_td3_many_seeds.py`](python_td3_experiments/experiment1_train_td3_many_seeds.py)
 
-## Why Training Reward Becomes Negative
+This script supports:
 
-During curriculum training, the reward starts positive on easier nominal cases and later becomes negative on hard nonlinear tracking cases.
+- `TD3`
+- `SAC`
+- `DDPG`
+- residual control modes such as residual `LQR`
+- multi-seed training
+- curriculum scheduling
+- expert warm-start
 
-That does **not** mean the controller got worse.
+### Step 3: Add Classical Baselines
 
-Why:
+Use:
 
-- early episodes are easier
-- later episodes include saturation and combined-stress cases
-- the reward distribution changes with curriculum stage
+- [`python_td3_experiments/experiment2_add_controllers.py`](python_td3_experiments/experiment2_add_controllers.py)
 
-For this reason, the final judgment is based on:
+This produces side-by-side benchmark results for classical and RL controllers under the same test cases.
 
-- validation `IAE`
-- validation `SSE`
-- `ISE`
-- `ControlEnergy`
-- `SaturationFraction`
+### Step 4: Select the Best RL Checkpoints
 
-not raw final episode reward alone.
+Use:
 
-## Reproducing the Best Result
+- [`python_td3_experiments/select_best_rl_checkpoint.py`](python_td3_experiments/select_best_rl_checkpoint.py)
 
-Train 10 seeds of the best residual SAC setup:
+This step is important because final training reward alone is not a reliable indicator of final closed-loop quality.
+
+### Step 5: Build Cross-Controller Summaries
+
+Use:
+
+- [`python_td3_experiments/compare_sac_td3_classical.py`](python_td3_experiments/compare_sac_td3_classical.py)
+
+This script builds the overall and hard-case comparison summaries used in the final analysis.
+
+### Step 6: Generate Report Figures
+
+Use:
+
+- [`python_td3_experiments/generate_residual_sac_report_graphs.py`](python_td3_experiments/generate_residual_sac_report_graphs.py)
+
+This script generates report-ready:
+
+- learning curves
+- winner counts
+- summary tables
+- training-stage plots
+
+## Selected Generated Figures
+
+### Overall Comparison
+
+![Overall Mean IAE](python_td3_experiments/outputs/residual_sac_hinf_curriculum_mpcwarm_10seeds_100k_comparison/overall_mean_iae_with_seed_std.png)
+
+![Overall Mean SSE](python_td3_experiments/outputs/residual_sac_hinf_curriculum_mpcwarm_10seeds_100k_comparison/overall_mean_sse_with_seed_std.png)
+
+### Hard-Case Comparison
+
+![Hard Case Mean IAE](python_td3_experiments/outputs/residual_sac_hinf_curriculum_mpcwarm_10seeds_100k_comparison/hard_cases_mean_iae_with_seed_std.png)
+
+![Hard Case Mean Energy](python_td3_experiments/outputs/residual_sac_hinf_curriculum_mpcwarm_10seeds_100k_comparison/hard_cases_mean_energy_with_seed_std.png)
+
+### Training Behavior
+
+![Training Reward With Curriculum Stages](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_report_graphs/training_reward_with_curriculum_stages.png)
+
+![Training Curves Across Seeds](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_report_graphs/training_learning_curves_all_seeds.png)
+
+### Controller Comparison
+
+![Controller Comparison Heatmap](python_td3_experiments/outputs/experiment_hinf_classical_comparison/controller_comparison_heatmap.png)
+
+![Winner Count Bars](python_td3_experiments/outputs/residual_sac_curriculum_mpcwarm_10seeds_100k_report_graphs/winner_count_bars.png)
+
+### Backbone Comparison
+
+![Overall Backbone IAE](python_td3_experiments/outputs/residual_backbone_comparison_lqr_mpc_hinf/overall_backbone_iae.png)
+
+![Overall Backbone SSE](python_td3_experiments/outputs/residual_backbone_comparison_lqr_mpc_hinf/overall_backbone_sse.png)
+
+## Best Current Result
+
+Best current setup:
+
+- `SAC`
+- `residual_lqr`
+- `MPC` warm-start
+- curriculum training
+- `10` seeds
+- `100000` steps per seed
+- validation-based best-checkpoint selection
+
+Representative overall summary:
+
+| Controller | Family | Seeds | Mean IAE | Mean Energy | Mean SSE |
+|---|---|---:|---:|---:|---:|
+| Residual SAC | RL hybrid | 10 | **15.7019** | 202.4493 | **6.2263** |
+| LQR | Classical | - | 15.7137 | 202.0997 | 6.7328 |
+| MPC | Classical | - | 15.7381 | 201.7797 | 6.8053 |
+| TD3 | RL | 10 | 20.4985 | 154.1465 | 20.9578 |
+
+Interpretation:
+
+- residual RL can improve final convergence while staying close to strong classical tracking
+- direct RL is clearly less reliable than the best hybrid setup
+- the classical backbone remains a major determinant of overall tracking quality
+
+## How To Reproduce
+
+### Train the Best Residual SAC Setup
 
 ```powershell
 & "C:\Users\Nathnael Biresaw\AppData\Local\Programs\Python\Python311\python.exe" `
@@ -229,7 +233,7 @@ Train 10 seeds of the best residual SAC setup:
   --output-dir "python_td3_experiments\outputs\residual_sac_curriculum_mpcwarm_10seeds_100k"
 ```
 
-Select the best checkpoint for each seed:
+### Select Best Checkpoints
 
 ```powershell
 & "C:\Users\Nathnael Biresaw\AppData\Local\Programs\Python\Python311\python.exe" `
@@ -240,7 +244,7 @@ Select the best checkpoint for each seed:
   --residual-voltage-limit 8
 ```
 
-Generate the final comparison:
+### Generate Final Controller Comparisons
 
 ```powershell
 & "C:\Users\Nathnael Biresaw\AppData\Local\Programs\Python\Python311\python.exe" `
@@ -251,20 +255,15 @@ Generate the final comparison:
   --output-dir "python_td3_experiments\outputs\residual_sac_curriculum_mpcwarm_10seeds_100k_best_comparison"
 ```
 
-Generate report graphs and table images:
+### Generate Report Figures
 
 ```powershell
 & "C:\Users\Nathnael Biresaw\AppData\Local\Programs\Python\Python311\python.exe" `
   "python_td3_experiments\generate_residual_sac_report_graphs.py"
 ```
 
-## Repository Note
+## Notes
 
-Large training checkpoint ZIP files are intentionally not tracked in Git. The repository keeps:
-
-- reproducible code
-- selected summary CSV results
-- final report figures and tables
-- a public-safe editable figure package for the paper
-
-This keeps the project lightweight while preserving the important research outputs.
+- Large checkpoint archives are intentionally not tracked in Git.
+- The repository focuses on source code, generated figures, and summary outputs.
+- If you need the full paper package, keep it outside the public repo or share it separately.

@@ -1,8 +1,0 @@
-metric,controller,wins
-IAE,LQR,18
-IAE,SAC,6
-SSE,LQR,12
-SSE,SAC,12
-Energy,LQI,15
-Energy,TD3,6
-Energy,PID,3
